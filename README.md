@@ -138,10 +138,10 @@ El informe fue diseñado para presentar los resultados de una manera clara, visu
 Se adjuntan capturas del reporte resultado que puede apoyar la presentación a los directivos y que puede ser usado por el equipo de control Interno, relacionando las variables identificadas en el ejercicio:
 
 1. Resumen ejecutivo
-![alt text](Capturas\image.png)
+![alt text](Capturas/image.png)
 
 2. Criterios de focalización
-![alt text](Capturas\image-1.png)
+![alt text](Capturas/image-1.png)
 
 3. Contratos priorizados
-![alt text](Capturas\image-2.png)
+![alt text](Capturas/image-2.png)
