@@ -1,0 +1,322 @@
+/// Contratos de compraventa y suministro incluidos en el universo histórico de seguimiento.
+table Contratos
+	lineageTag: a9b8702c-ceb2-4edc-8e2e-a238a9dfb149
+
+	/// Número de contratos que cumplen los criterios del análisis.
+	measure 'Contratos analizados' = COUNTROWS(Contratos)
+		formatString: #,##0
+		displayFolder: Resumen
+		lineageTag: 794eea0c-b23b-49f1-ae0a-aec145cbd760
+
+	/// Número de contratos visible después de aplicar filtros.
+	measure 'Contratos seleccionados' = COUNTROWS(Contratos)
+		formatString: #,##0
+		displayFolder: Selección
+		lineageTag: fa88feb4-4a0f-499a-a004-af1eda8cd588
+
+	/// Proporción de contratos con días adicionales al plazo inicialmente pactado.
+	measure '% con adición de plazo' = DIVIDE(SUM(Contratos[Bandera plazo]), COUNTROWS(Contratos))
+		formatString: 0.0%
+		displayFolder: Incidencia
+		lineageTag: f52c8f91-7072-491b-a583-b19c3d5989f7
+
+	/// Proporción de contratos sin pago o con ejecución inferior al 80 por ciento del valor contractual.
+	measure '% con desviación de recursos' = DIVIDE(SUM(Contratos[Bandera recursos]), COUNTROWS(Contratos))
+		formatString: 0.0%
+		displayFolder: Incidencia
+		lineageTag: 21bec612-4403-47d7-b927-c6d1254d0c66
+
+	/// Proporción de contratos que no registran liquidación.
+	measure '% sin liquidación' = DIVIDE(SUM(Contratos[Bandera cierre]), COUNTROWS(Contratos))
+		formatString: 0.0%
+		displayFolder: Incidencia
+		lineageTag: 790eb4f3-12aa-4470-b36a-f55bb426dccb
+
+	/// Número de contratos que reúnen al menos dos criterios entre sector, modalidad y alto valor.
+	measure 'Contratos prioridad 1' = CALCULATE(COUNTROWS(Contratos), Contratos[Prioridad] = "1. Seguimiento intensivo")
+		formatString: #,##0
+		displayFolder: Priorización
+		lineageTag: 2e6c68f3-f45d-42a4-a9b7-59b7603a2e62
+
+	/// Valor de los contratos visibles después de aplicar filtros.
+	measure 'Valor contractual seleccionado' = SUM(Contratos[Valor del contrato])
+		formatString: $ #,##0
+		displayFolder: Selección
+		lineageTag: 0ea186f7-4222-4f1e-9c51-a4cb657c9623
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	/// Valor contractual asociado al nivel de seguimiento intensivo.
+	measure 'Valor prioridad 1' = CALCULATE(SUM(Contratos[Valor del contrato]), Contratos[Prioridad] = "1. Seguimiento intensivo")
+		formatString: $ #,##0
+		displayFolder: Priorización
+		lineageTag: fac6a956-8fb6-495e-a138-479f9292ff72
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column 'ID contrato'
+		dataType: string
+		lineageTag: 3af42bd4-c5b5-4f53-bba3-f6a814396b21
+		summarizeBy: none
+		sourceColumn: ID contrato
+
+	/// Entidad estatal responsable del contrato.
+	column Entidad
+		dataType: string
+		lineageTag: 0e60bbf3-876d-4646-b923-e3cb1a4a7e35
+		summarizeBy: none
+		sourceColumn: Entidad
+
+	/// Departamento normalizado de ejecución.
+	column Departamento
+		dataType: string
+		lineageTag: e183935f-b859-4ade-8594-2495b81cc2b2
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: Departamento
+
+	/// Ciudad normalizada; para Distrito Capital se presenta Bogotá.
+	column Ciudad
+		dataType: string
+		lineageTag: b3208fa5-2ab7-4d2b-9b80-776ad9359c9e
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: Ciudad
+
+	/// Sector administrativo de la entidad contratante.
+	column Sector
+		dataType: string
+		lineageTag: 54c64c99-3a90-4b23-a13c-f46f45de3eb9
+		summarizeBy: none
+		sourceColumn: Sector
+
+	/// Tipo de contrato registrado en SECOP.
+	column 'Tipo de contrato'
+		dataType: string
+		lineageTag: 1bf4b720-64e9-423f-9163-b6b098e2aee7
+		summarizeBy: none
+		sourceColumn: Tipo de contrato
+
+	/// Modalidad utilizada para seleccionar al proveedor.
+	column 'Modalidad de contratación'
+		dataType: string
+		lineageTag: 2761e986-b2d0-418b-9eb7-97bde0893384
+		summarizeBy: none
+		sourceColumn: Modalidad de contratación
+
+	column 'Fecha de firma'
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: 9a6c8d99-267c-4564-b768-b79e8e18e754
+		summarizeBy: none
+		sourceColumn: Fecha de firma
+
+	column 'Fecha de fin'
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: e0b54406-cbc5-486a-96d5-7512376e3898
+		summarizeBy: none
+		sourceColumn: Fecha de fin
+
+	/// Proveedor adjudicado.
+	column Proveedor
+		dataType: string
+		lineageTag: 1455cdcc-a82a-46f8-b5db-89ab7e74ba35
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+	column 'Es pyme'
+		dataType: string
+		lineageTag: 3a5430c2-df6f-4014-8620-eed160d06d25
+		summarizeBy: none
+		sourceColumn: Es pyme
+
+	column 'Valor del contrato'
+		dataType: decimal
+		isHidden
+		formatString: $ #,##0
+		lineageTag: 84942b19-30cc-478e-b41a-dea29bc99006
+		summarizeBy: sum
+		sourceColumn: Valor del contrato
+
+	column 'Valor pagado'
+		dataType: decimal
+		isHidden
+		formatString: $ #,##0
+		lineageTag: 5f0f99b2-b626-4035-a91a-b2da3af23109
+		summarizeBy: sum
+		sourceColumn: Valor pagado
+
+	column 'Días adicionados'
+		dataType: int64
+		isHidden
+		lineageTag: 30710e1d-d992-49e2-95be-b8d714b6032b
+		summarizeBy: none
+		sourceColumn: Días adicionados
+
+	column Estado
+		dataType: string
+		lineageTag: 8181b518-9e74-401e-ae8e-b61499732fb0
+		summarizeBy: none
+		sourceColumn: Estado
+
+	column Liquidado
+		dataType: string
+		lineageTag: 417ca8c5-1b43-4914-acc5-2d08e8d2557b
+		summarizeBy: none
+		sourceColumn: Liquidado
+
+	column 'Destino del gasto'
+		dataType: string
+		lineageTag: ff05c9d5-a2a4-474b-b03e-05e6aeebea1c
+		summarizeBy: none
+		sourceColumn: Destino del gasto
+
+	column 'Año de firma'
+		dataType: int64
+		lineageTag: 37e88c88-5951-48f5-be59-916624b0b1ff
+		summarizeBy: none
+		sourceColumn: Año de firma
+
+	/// Agrupación de sectores para lectura ejecutiva.
+	column 'Foco sectorial'
+		dataType: string
+		lineageTag: 3570625f-6a34-4339-86e7-41498e062f60
+		summarizeBy: none
+		sourceColumn: Foco sectorial
+
+	/// Agrupación de modalidades para lectura ejecutiva.
+	column 'Foco de modalidad'
+		dataType: string
+		lineageTag: b3f449fd-c4c0-4ce2-99e8-937342c95e77
+		summarizeBy: none
+		sourceColumn: Foco de modalidad
+
+	/// Segmento de exposición económica empleado como criterio de focalización.
+	column 'Rango de valor'
+		dataType: string
+		lineageTag: 7f9ed674-99b7-4d82-b884-be8e14ce3a04
+		summarizeBy: none
+		sourceColumn: Rango de valor
+
+	/// Aspecto de supervisión recomendado según el destino del gasto.
+	column 'Enfoque de supervisión'
+		dataType: string
+		lineageTag: 1c7c9892-fc40-4cc7-9a62-4449741ea1c5
+		summarizeBy: none
+		sourceColumn: Enfoque de supervisión
+
+	/// Nivel de seguimiento sugerido según la coincidencia de focos.
+	column Prioridad
+		dataType: string
+		lineageTag: ed5a9263-e5a8-4f13-888d-609214b4dc87
+		summarizeBy: none
+		sourceColumn: Prioridad
+
+	column 'Orden de prioridad'
+		dataType: int64
+		isHidden
+		lineageTag: 93065341-a41c-4655-a706-feb73f0807e4
+		summarizeBy: none
+		sourceColumn: Orden de prioridad
+
+	column 'Puntaje de focalización'
+		dataType: int64
+		isHidden
+		lineageTag: a92ed7d9-1758-4d6c-a5e3-56e8bd3374fc
+		summarizeBy: none
+		sourceColumn: Puntaje de focalización
+
+	/// Resultado histórico observado sobre el plazo.
+	column 'Adición de plazo'
+		dataType: string
+		lineageTag: beca391f-3602-414d-95a0-64fced24d474
+		summarizeBy: none
+		sourceColumn: Adición de plazo
+
+	/// Resultado histórico observado sobre la ejecución de recursos.
+	column 'Desviación de recursos'
+		dataType: string
+		lineageTag: daab53ee-b30c-40d4-ba51-1abd967c64fd
+		summarizeBy: none
+		sourceColumn: Desviación de recursos
+
+	/// Resultado histórico observado sobre la liquidación.
+	column 'Sin liquidación'
+		dataType: string
+		lineageTag: f37f54f8-a18b-4ec4-a220-48c3e7be9dea
+		summarizeBy: none
+		sourceColumn: Sin liquidación
+
+	/// Acción sugerida para Control Interno.
+	column 'Acción recomendada'
+		dataType: string
+		lineageTag: f13f2b8b-d1ad-402d-9679-8e642dc3d030
+		summarizeBy: none
+		sourceColumn: Acción recomendada
+
+	column 'Bandera plazo'
+		dataType: int64
+		isHidden
+		lineageTag: 8a59b132-40d5-45ed-88a2-1ccf6d33f7b3
+		summarizeBy: sum
+		sourceColumn: Bandera plazo
+
+	column 'Bandera recursos'
+		dataType: int64
+		isHidden
+		lineageTag: c5c6cdc1-a452-489f-86b4-3ede56f9f97c
+		summarizeBy: sum
+		sourceColumn: Bandera recursos
+
+	column 'Bandera cierre'
+		dataType: int64
+		isHidden
+		lineageTag: 05ff2f92-6008-4fea-b82d-4af135cb1cd2
+		summarizeBy: sum
+		sourceColumn: Bandera cierre
+
+	partition Contratos = m
+		mode: import
+		source =
+				let
+					Source = Parquet.Document(
+				    Binary.Buffer(
+				        Web.Contents(
+				            "https://raw.githubusercontent.com/jdguzmans/ciencia-de-datos-aplicada-taller-1/master/data/secop_bienes.parquet"
+				        	)
+				    	)
+					),
+					Selected = Table.SelectColumns(Source, {"id_contrato", "nombre_entidad", "departamento", "ciudad", "sector", "tipo_de_contrato", "modalidad_de_contratacion", "fecha_de_firma", "fecha_de_fin_del_contrato", "proveedor_adjudicado", "es_pyme", "valor_del_contrato", "valor_pagado", "dias_adicionados", "estado_contrato", "liquidaci_n", "destino_gasto"}),
+					Typed = Table.TransformColumnTypes(Selected, {{"id_contrato", type text}, {"nombre_entidad", type text}, {"departamento", type text}, {"ciudad", type text}, {"sector", type text}, {"tipo_de_contrato", type text}, {"modalidad_de_contratacion", type text}, {"fecha_de_firma", type datetime}, {"fecha_de_fin_del_contrato", type datetime}, {"proveedor_adjudicado", type text}, {"es_pyme", type text}, {"valor_del_contrato", type number}, {"valor_pagado", type number}, {"dias_adicionados", Int64.Type}, {"estado_contrato", type text}, {"liquidaci_n", type text}, {"destino_gasto", type text}}, "es-CO"),
+					Universe = Table.SelectRows(Typed, each List.Contains({"Cerrado", "terminado", "cedido", "Modificado"}, [estado_contrato]) and [fecha_de_fin_del_contrato] <= #datetime(2025, 12, 31, 0, 0, 0) and [fecha_de_firma] >= #datetime(2020, 1, 1, 0, 0, 0) and [fecha_de_firma] <= #datetime(2024, 12, 31, 23, 59, 59)),
+					CleanValue = Table.AddColumn(Universe, "Valor contrato limpio", each if [valor_del_contrato] = 0 or [valor_del_contrato] = 12858450316000000 then null else [valor_del_contrato], type number),
+					CleanDays = Table.AddColumn(CleanValue, "Días limpios", each if [dias_adicionados] = 14276 then null else [dias_adicionados], Int64.Type),
+					City = Table.AddColumn(CleanDays, "Ciudad normalizada", each if [departamento] = "Distrito Capital de Bogotá" then "Bogotá" else [ciudad], type text),
+					FlagTerm = Table.AddColumn(City, "Bandera plazo", each if [Días limpios] <> null and [Días limpios] > 0 then 1 else 0, Int64.Type),
+					FlagResources = Table.AddColumn(FlagTerm, "Bandera recursos", each if [valor_pagado] = 0 or ([Valor contrato limpio] <> null and [Valor contrato limpio] > 0 and [valor_pagado] / [Valor contrato limpio] < 0.8) then 1 else 0, Int64.Type),
+					FlagClose = Table.AddColumn(FlagResources, "Bandera cierre", each if [liquidaci_n] = "No" then 1 else 0, Int64.Type),
+					SectorFocus = Table.AddColumn(FlagClose, "Es foco sector", each List.Contains({"Salud y Protección Social", "Transporte", "agricultura", "Minas y Energía", "Industria", "Ciencia Tecnología", "interior", "Presidencia de la República", "Relaciones Exteriores", "Información Estadística", "deportes", "Ley de Justicia", "Educación Nacional"}, [sector]), type logical),
+					ModeFocus = Table.AddColumn(SectorFocus, "Es foco modalidad", each List.Contains({"Contratación régimen especial (con ofertas)", "Contratación régimen especial", "Contratación directa", "Licitación pública"}, [modalidad_de_contratacion]), type logical),
+					HighValue = Table.AddColumn(ModeFocus, "Es alto valor", each [Valor contrato limpio] <> null and [Valor contrato limpio] > 78600000, type logical),
+					FocusScore = Table.AddColumn(HighValue, "Puntaje de focalización", each Number.From([Es foco sector]) + Number.From([Es foco modalidad]) + Number.From([Es alto valor]), Int64.Type),
+					Priority = Table.AddColumn(FocusScore, "Prioridad", each if [Puntaje de focalización] >= 2 then "1. Seguimiento intensivo" else if [Puntaje de focalización] = 1 then "2. Revisión periódica" else "3. Muestra de control", type text),
+					PriorityOrder = Table.AddColumn(Priority, "Orden de prioridad", each if [Prioridad] = "1. Seguimiento intensivo" then 1 else if [Prioridad] = "2. Revisión periódica" then 2 else 3, Int64.Type),
+					Action = Table.AddColumn(PriorityOrder, "Acción recomendada", each if [Prioridad] = "1. Seguimiento intensivo" then "Supervisión intensiva desde la firma" else if [Prioridad] = "2. Revisión periódica" then "Revisión periódica según criterio" else "Incluir en muestra aleatoria", type text),
+					ReviewFocus = Table.AddColumn(Action, "Enfoque de supervisión", each if [destino_gasto] = "Funcionamiento" then "Ejecución de recursos, pagos y obligaciones" else if [destino_gasto] = "Inversión" then "Plazo, entregables y liquidación" else "Clasificación y calidad del registro", type text),
+					ValueRange = Table.AddColumn(ReviewFocus, "Rango de valor", each if [Valor contrato limpio] = null then "Sin valor válido" else if [Valor contrato limpio] <= 20900000 then "1. Bajo (≤ $20,9 M)" else if [Valor contrato limpio] <= 78600000 then "2. Medio ($20,9–78,6 M)" else "3. Alto (> $78,6 M)", type text),
+					SectorGroup = Table.AddColumn(ValueRange, "Foco sectorial", each if [sector] = "Ley de Justicia" then "Justicia" else if List.Contains({"Salud y Protección Social", "interior", "agricultura", "Transporte"}, [sector]) then [sector] else "Otros sectores", type text),
+					ModeGroup = Table.AddColumn(SectorGroup, "Foco de modalidad", each if List.Contains({"Contratación régimen especial (con ofertas)", "Contratación régimen especial", "Contratación directa", "Licitación pública", "Mínima cuantía"}, [modalidad_de_contratacion]) then [modalidad_de_contratacion] else "Otras modalidades", type text),
+					DisplayTerm = Table.AddColumn(ModeGroup, "Adición de plazo", each if [Bandera plazo] = 1 then "Sí" else "No", type text),
+					DisplayResources = Table.AddColumn(DisplayTerm, "Desviación de recursos", each if [Bandera recursos] = 1 then "Sí" else "No", type text),
+					DisplayClose = Table.AddColumn(DisplayResources, "Sin liquidación", each if [Bandera cierre] = 1 then "Sí" else "No", type text),
+					Year = Table.AddColumn(DisplayClose, "Año de firma", each Date.Year(DateTime.Date([fecha_de_firma])), Int64.Type),
+					Output = Table.RenameColumns(Table.SelectColumns(Year, {"id_contrato", "nombre_entidad", "departamento", "Ciudad normalizada", "sector", "tipo_de_contrato", "modalidad_de_contratacion", "fecha_de_firma", "fecha_de_fin_del_contrato", "proveedor_adjudicado", "es_pyme", "Valor contrato limpio", "valor_pagado", "Días limpios", "estado_contrato", "liquidaci_n", "destino_gasto", "Año de firma", "Foco sectorial", "Foco de modalidad", "Rango de valor", "Enfoque de supervisión", "Puntaje de focalización", "Prioridad", "Orden de prioridad", "Adición de plazo", "Desviación de recursos", "Sin liquidación", "Acción recomendada", "Bandera plazo", "Bandera recursos", "Bandera cierre"}), {{"id_contrato", "ID contrato"}, {"nombre_entidad", "Entidad"}, {"departamento", "Departamento"}, {"Ciudad normalizada", "Ciudad"}, {"sector", "Sector"}, {"tipo_de_contrato", "Tipo de contrato"}, {"modalidad_de_contratacion", "Modalidad de contratación"}, {"fecha_de_firma", "Fecha de firma"}, {"fecha_de_fin_del_contrato", "Fecha de fin"}, {"proveedor_adjudicado", "Proveedor"}, {"es_pyme", "Es pyme"}, {"Valor contrato limpio", "Valor del contrato"}, {"valor_pagado", "Valor pagado"}, {"Días limpios", "Días adicionados"}, {"estado_contrato", "Estado"}, {"liquidaci_n", "Liquidado"}, {"destino_gasto", "Destino del gasto"}}),
+					FinalTypes = Table.TransformColumnTypes(Output, {{"Valor del contrato", Currency.Type}, {"Valor pagado", Currency.Type}}, "es-CO")
+				in
+					FinalTypes
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
