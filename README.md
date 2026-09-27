@@ -4,7 +4,7 @@
 ## **Integrantes:**
 | Nombre | Código |
 |---|---|
-| Juan Guzmán | 2 |
+| Juan David Guzmán | 201224442 |
 | Andrés Felipe Méndez | 200611694 |
 
 
